@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:60504",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MinimumLogLevel": "Trace",
+        "Environment": "LOCAL",
+        "APPINSIGHTS_INSTRUMENTATIONKEY": "c92c8635-c469-439a-b40a-794a645e5b97",
+        "CloudRoleNameAPI": "",
+        "KEYVAULT_ENDPOINT": "",
+        "KEYVAULT_RW_ENDPOINT": "",
+        "SQLConnectionStringTemplate": "Data Source=(localDB)\\ProjectsV13; Initial Catalog = MyAPI.DB; Integrated Security = True;",
+        "SQLConnectionMaxRetryCount": "5",
+        "SQLConnectionRetryDelayInSeconds": "30",
+        "FeatMgmtApiUrl": "",
+        "Auth0Authority": "",
+        "FeatMgmtApiAuth0Audience": "",
+        "APIAuth0ClientId": "iwgValdsXOzltoQ91stpQATXagfNhZYG",
+        "FeatMgmtApiRequestTimeoutInSeconds": "60",
+        "FeatMgmtApiSDKCacheExpiryInSeconds": "300",
+        "SwaggerUIClientID": "VkbWNI0Xlp73fOIJFVwlDfLKt3ss3QpM",
+        "DigitalTeamGroup": "Digital Team",
+        "APIAudience": "",
+        "Auth0Tenant": "",
+        "Auth0WellKnownKeysLocation": "",
+        "ServiceRegistryAudience": "",
+        "ServiceRegistryURI": "",
+        "MilestoneAuth0Audience": "",
+        "EquipmentPackApiBaseAddress": "",
+        "MilestoneApiBaseAddress": "",
+        "EquipmentAuth0Audience": "",
+        "APIOrigin": "",
+        "ClientRateLimitPolicies__ClientRules__0__ClientId": ""
+      },
+      "ancmHostingModel": "OutOfProcess"
+    }
+  }
+}

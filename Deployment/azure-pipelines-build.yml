@@ -1,0 +1,250 @@
+trigger:
+    batch: true
+    branches:
+        include:
+            - main
+
+stages:
+    - stage: build
+      jobs:
+
+      - job: build_application
+        displayName: "Build and test Components"
+        pool:
+          name: Azure Pipelines
+          demands: msbuild
+          vmImage: windows-2019
+
+        steps:
+        - task: UseDotNet@2
+          displayName: 'Use .Net Core sdk 6.0.x'
+          inputs:
+            version: '6.0.x'
+            
+        - task: DotNetCoreCLI@2
+          displayName: 'Restore .Net Core Dependencies'
+          inputs:
+            command: 'restore'
+            projects: '**/*.csproj'
+            vstsFeed: 'f6d8af72-ac00-4c1e-92b4-160a2b740c7b'
+            includeNuGetOrg: false
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Run Unit Tests'
+          inputs:
+            command: 'test'
+            projects: '**/*UnitTests.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Run SpecFlow Tests'
+          inputs:
+            command: 'test'
+            projects: '**/*SpecflowTests.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish API - Debug"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.API.csproj'
+            arguments: '-o $(Build.StagingDirectory)/api'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish API - Release"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.API.csproj'
+            arguments: '-o $(Build.StagingDirectory)/api/release'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip API - Debug'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/api/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/CustomerService.API.zip'
+            replaceExistingArchive: true
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip API - Release'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/api/release/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/release/CustomerService.API.zip'
+            replaceExistingArchive: true
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish MockClient - Debug"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/Customer.Webhook.MockClient.csproj'
+            arguments: '-o $(Build.StagingDirectory)/mockclient'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish MockClient - Release"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/Customer.Webhook.MockClient.csproj'
+            arguments: '-o $(Build.StagingDirectory)/mockclient/release'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip MockClient - Debug'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/mockclient/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/Customer.Webhook.MockClient.zip'
+            replaceExistingArchive: true
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip MockClient - Release'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/mockclient/release/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/release/Customer.Webhook.MockClient.zip'
+            replaceExistingArchive: true
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish Consumer - Debug"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.Processor.csproj'
+            arguments: '-o $(build.artifactstagingdirectory)/webjob/app_data/jobs/continuous/CustomerService.Processor'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish Consumer - Release"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.Processor.csproj'
+            arguments: '--configuration release -o $(build.artifactstagingdirectory)/webjobrelease/app_data/jobs/continuous/CustomerService.Processor'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip Consumer - Debug'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/webjob/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/CustomerService.Processor.zip'
+            replaceExistingArchive: true
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip Consumer - Release'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/webjobrelease/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/release/CustomerService.Processor.zip'
+            replaceExistingArchive: true
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish Consumer - Debug"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.Poison.Processor.csproj'
+            arguments: '-o $(build.artifactstagingdirectory)/poisonwebjob/app_data/jobs/continuous/CustomerService.Poison.Processor'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish Consumer - Release"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.Poison.Processor.csproj'
+            arguments: '--configuration release -o $(build.artifactstagingdirectory)/poisonwebjobrelease/app_data/jobs/continuous/CustomerService.Poison.Processor'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip Consumer - Debug'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/poisonwebjob/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/CustomerService.Poison.Processor.zip'
+            replaceExistingArchive: true
+
+        - task: ArchiveFiles@2
+          displayName: 'Zip Consumer - Release'
+          inputs:
+            rootFolderOrFile: '$(build.artifactstagingdirectory)/poisonwebjobrelease/'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/release/CustomerService.Poison.Processor.zip'
+            replaceExistingArchive: true
+
+        - task: DotNetCoreCLI@2
+          displayName: "Publish Integration Tests - Debug"
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '**/CustomerService.IntegrationTests.csproj'
+            arguments: '--configuration debug --output $(build.artifactstagingdirectory)/CustomerService.IntegrationTests'
+            zipAfterPublish: false
+            modifyOutputPath: false
+
+        - task: CopyFiles@2
+          displayName: 'Copy Deployment folder to artifacts staging directory'
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/Deployment'
+            Contents: '**'
+            TargetFolder: '$(build.artifactstagingdirectory)/Deployment'
+            
+        - task: CopyFiles@2
+          displayName: 'Copy Integration test input files to staging directory'
+          inputs:
+            SourceFolder: '$(Build.SourcesDirectory)/src/CustomerService/CustomerService.IntegrationTests/TestFiles'
+            Contents: '**'
+            TargetFolder: '$(build.artifactstagingdirectory)'
+
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish staged contents to CD Pipeline'
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'drop'
+            publishLocation: 'Container'
+
+      - job: build_database
+        displayName: 'Build database'
+        pool:
+          vmImage: windows-2019
+
+        steps:
+          - task: MSBuild@1
+            displayName: 'Build database'
+            inputs:
+              solution: '**/*.sqlproj'
+              clean: true
+
+          - task: CopyFiles@2
+            displayName: 'Copy DB deployment file to staging folder'
+            inputs:
+              Contents: '**\*.dacpac'
+              TargetFolder: '$(build.artifactstagingdirectory)'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish database'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'

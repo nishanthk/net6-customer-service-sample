@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Constants\**" />
+    <Compile Remove="Mappers\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Constants\**" />
+    <EmbeddedResource Remove="Mappers\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Constants\**" />
+    <None Remove="Mappers\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="AspNetCoreRateLimit" Version="4.0.1" />
+    <PackageReference Include="AutoMapper" Version="11.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Kafka.SDKs" Version="7.0.1" />
+    <PackageReference Include="MilestoneService.APIClient" Version="1.0.1" />
+    <PackageReference Include="ASNManagement.ApiClient" Version="1.0.2-pre.2022.4.1-1" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+	<PackageReference Include="API.SDK" Version="5.1.0" />
+	<PackageReference Include="HTTP.Clients" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CustomerService.EF\CustomerService.EF.csproj" />
+  </ItemGroup>
+
+</Project>
